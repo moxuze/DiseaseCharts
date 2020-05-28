@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#628FEE</color>
+    <color name="colorPrimaryDark">#62AFEE</color>
+    <color name="colorAccent">#03DAC5</color>
+    <color name="text">#BA55D3</color>
+    <color name="about_background">#000000</color>
+    <color name="about_text">#FFFFFF</color>
+    <color name="news_super_link">#62AFEE</color>
+    <color name="rumors_title">#FF7CCF</color>
+    <color name="rumors_main_summary">#62AFEE</color>
+    <color name="existing_confirmed">#FFBFCF</color>
+    <color name="existing_suspected">#FFD08C</color>
+    <color name="no_symptom">#FFDF8F</color>
+    <color name="input">#FFD08C</color>
+    <color name="total_confirmed">#FFB6C1</color>
+    <color name="total_dead">#DDDDDD</color>
+    <color name="total_cured">#CBEA8B</color>
+    <color name="date">#EED1EE</color>
+    <color name="value">#FF8C9D</color>
+    <color name="hubei">#FFB6C1</color>
+    <color name="other">#8CEAFF</color>
+    <color name="item">#FFEABA</color>
+    <color name="item_list">#FFF5CE</color>
+</resources>

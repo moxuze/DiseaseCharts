@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/global_refresh"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".china.ChinaFragment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_intro_existing_confirmed"
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:singleLine="false"
+                    android:background="@color/existing_confirmed"
+                    android:textSize="20sp"
+                    android:textColor="@color/text"
+                    android:text="@string/existing_confirmed" />
+
+                <TextView
+                    android:id="@+id/tv_intro_confirmed"
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:singleLine="false"
+                    android:background="@color/total_confirmed"
+                    android:textSize="20sp"
+                    android:textColor="@color/text"
+                    android:text="@string/total_confirmed" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_intro_cured"
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:singleLine="false"
+                    android:background="@color/total_cured"
+                    android:textSize="20sp"
+                    android:textColor="@color/text"
+                    android:text="@string/total_cured" />
+
+                <TextView
+                    android:id="@+id/tv_intro_dead"
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:singleLine="false"
+                    android:background="@color/total_dead"
+                    android:textSize="20sp"
+                    android:textColor="@color/text"
+                    android:text="@string/total_dead" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tv_intro_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="30dp"
+                android:gravity="end"
+                android:background="@color/date"
+                android:text="@string/date" />
+
+            <com.github.mikephil.charting.charts.PieChart
+                android:id="@+id/distribution_chart"
+                android:layout_width="match_parent"
+                android:layout_height="300dp" />
+
+            <Switch
+                android:id="@+id/switch_confirmed_existing"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <com.github.mikephil.charting.charts.BarChart
+                android:id="@+id/country_chart"
+                android:layout_width="match_parent"
+                android:layout_height="300dp" />
+
+            <RadioGroup
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/radio_total_cured"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/total_cured"
+                    android:textSize="12sp" />
+
+                <RadioButton
+                    android:id="@+id/radio_total_dead"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/total_dead"
+                    android:textSize="12sp" />
+
+                <RadioButton
+                    android:id="@+id/radio_total_confirmed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/total_confirmed"
+                    android:textSize="12sp" />
+
+                <RadioButton
+                    android:id="@+id/radio_existing_confirmed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/existing_confirmed"
+                    android:textSize="12sp" />
+            </RadioGroup>
+        </LinearLayout>
+    </ScrollView>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

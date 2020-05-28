@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="65dp"
+    android:layout_height="60dp"
+    android:background="@drawable/marker"
+    tools:ignore="Overdraw">
+
+    <TextView
+        android:id="@+id/tv_mv_trend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="7dp"
+        android:layout_marginLeft="2dp"
+        android:layout_marginRight="2dp"
+        android:textSize="12sp"
+        android:textColor="@android:color/white"
+        android:gravity="center"
+        android:ellipsize="end"
+        android:singleLine="false"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+</RelativeLayout>

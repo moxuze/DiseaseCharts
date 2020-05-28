@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">疫情图表</string>
+    <string name="about">关于</string>
+    <string name="tab_china">国内疫情</string>
+    <string name="tab_global">国际疫情</string>
+    <string name="tab_news">新闻</string>
+    <string name="tab_rumors">辟谣</string>
+    <string name="hubei">湖北</string>
+    <string name="other">其他</string>
+    <string name="intro_existing_confirmed">现存确诊\n%1$s</string>
+    <string name="intro_no_symptom">无症状\n%1$s</string>
+    <string name="intro_input">境外输入\n%1$s</string>
+    <string name="intro_total_confirmed">累计确诊\n%1$s</string>
+    <string name="intro_total_dead">累计死亡\n%1$s</string>
+    <string name="intro_total_cured">累计治愈\n%1$s</string>
+    <string name="intro_date">截至%1$s</string>
+    <string name="self_introduction">"分布概况\nproducted by MoXtar"</string>
+    <string name="format">人</string>
+    <string name="confirmed">确诊</string>
+    <string name="dead">死亡</string>
+    <string name="cured">治愈</string>
+    <string name="suspected">疑似</string>
+    <string name="date">截至</string>
+    <string name="existing_confirmed">现存确诊</string>
+    <string name="no_symptom">无症状</string>
+    <string name="input">境外输入</string>
+    <string name="total_confirmed">累计确诊</string>
+    <string name="total_dead">累计死亡</string>
+    <string name="total_cured">累计治愈</string>
+    <string name="total_existing">累计/现存</string>
+    <string name="msg_success_refresh">刷新成功</string>
+    <string name="msg_success_load">加载成功</string>
+    <string name="msg_err_request">请求失败，请下拉刷新</string>
+    <string name="msg_err_json">数据缺损，请下拉刷新</string>
+</resources>
