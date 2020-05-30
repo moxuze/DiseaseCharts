@@ -16,17 +16,19 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.PieChart;
 import com.moxtar_1s.android.disease_charts.R;
+import com.moxtar_1s.android.disease_charts.global.country.GlobalCountryDrawer;
+import com.moxtar_1s.android.disease_charts.global.distribution.GlobalDistributionDrawer;
+import com.moxtar_1s.android.disease_charts.global.introduction.GlobalIntroDrawer;
+import com.moxtar_1s.android.disease_charts.global.introduction.GlobalIntroPrinter;
 
 import org.json.JSONException;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class GlobalFragment extends Fragment {
+public class GlobalFragment extends Fragment implements GlobalIntroPrinter {
     private ExecutorService mRefreshExecutor;
     private boolean isInitialized;
 
@@ -48,9 +50,9 @@ public class GlobalFragment extends Fragment {
     private Switch mSwitchConfirmedExisting;
 
     private GlobalDataSubject mGlobalDataSubject;
-    private IntroductionDrawer mIntroductionDrawer;
-    private DistributionChartDrawer mDistributionChartDrawer;
-    private CountryChartDrawer mCountryChartDrawer;
+    private GlobalIntroDrawer mGlobalIntroDrawer;
+    private GlobalDistributionDrawer mGlobalDistributionDrawer;
+    private GlobalCountryDrawer mGlobalCountryDrawer;
 
     public GlobalFragment() {}
 
@@ -90,29 +92,22 @@ public class GlobalFragment extends Fragment {
             mTVIntroDead = view.findViewById(R.id.tv_intro_dead);
             mTVIntroCured = view.findViewById(R.id.tv_intro_cured);
             mTVIntroDate = view.findViewById(R.id.tv_intro_date);
-            // 包装TextView
-            Map<String, TextView> textViewMap = new HashMap<>();
-            textViewMap.put("tvIntroExistingConfirmed", mTVIntroExistingConfirmed);
-            textViewMap.put("tvIntroConfirmed", mTVIntroConfirmed);
-            textViewMap.put("tvIntroDead", mTVIntroDead);
-            textViewMap.put("tvIntroCured", mTVIntroCured);
-            textViewMap.put("tvIntroDate", mTVIntroDate);
             // 创建Drawer
-            mIntroductionDrawer = new IntroductionDrawer(textViewMap, getActivity());
-            mGlobalDataSubject.addObserver(mIntroductionDrawer);
+            mGlobalIntroDrawer = new GlobalIntroDrawer(this);
+            mGlobalDataSubject.addObserver(mGlobalIntroDrawer);
         }
         {   // *DistributionChart* //
             mDistributionChart = view.findViewById(R.id.distribution_chart);
             mSwitchConfirmedExisting = view.findViewById(R.id.switch_confirmed_existing);
             // 创建Drawer
-            mDistributionChartDrawer = new DistributionChartDrawer(mDistributionChart, getActivity());
-            mGlobalDataSubject.addObserver(mDistributionChartDrawer);
+            mGlobalDistributionDrawer = new GlobalDistributionDrawer(mDistributionChart, getActivity());
+            mGlobalDataSubject.addObserver(mGlobalDistributionDrawer);
             // 设置控件
             mSwitchConfirmedExisting.setChecked(false);
             mSwitchConfirmedExisting.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    mDistributionChartDrawer.setTotalConfirmedEnabled(isChecked);
+                    mGlobalDistributionDrawer.setTotalConfirmedEnabled(isChecked);
                 }
             });
         }
@@ -123,15 +118,15 @@ public class GlobalFragment extends Fragment {
             mRadioTotalConfirmed = view.findViewById(R.id.radio_total_confirmed);
             mRadioExistingConfirmed = view.findViewById(R.id.radio_existing_confirmed);
             // 创建Drawer
-            mCountryChartDrawer = new CountryChartDrawer(mCountryChart, getActivity());
-            mGlobalDataSubject.addObserver(mCountryChartDrawer);
+            mGlobalCountryDrawer = new GlobalCountryDrawer(mCountryChart, getActivity());
+            mGlobalDataSubject.addObserver(mGlobalCountryDrawer);
             // 设置控件
             mRadioTotalCured.setChecked(true);
             mRadioTotalCured.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (isChecked) {
-                        mCountryChartDrawer.loadTotalCured();
+                        mGlobalCountryDrawer.loadTotalCured();
                     }
                 }
             });
@@ -139,7 +134,7 @@ public class GlobalFragment extends Fragment {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (isChecked) {
-                        mCountryChartDrawer.loadTotalDead();
+                        mGlobalCountryDrawer.loadTotalDead();
                     }
                 }
             });
@@ -147,7 +142,7 @@ public class GlobalFragment extends Fragment {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (isChecked) {
-                        mCountryChartDrawer.loadTotalConfirmed();
+                        mGlobalCountryDrawer.loadTotalConfirmed();
                     }
                 }
             });
@@ -155,7 +150,7 @@ public class GlobalFragment extends Fragment {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (isChecked) {
-                        mCountryChartDrawer.loadExistingConfirmed();
+                        mGlobalCountryDrawer.loadExistingConfirmed();
                     }
                 }
             });
@@ -205,5 +200,20 @@ public class GlobalFragment extends Fragment {
             mRefreshExecutor.execute(new RefreshRunnable());
             isInitialized = true;
         }
+    }
+
+    @Override
+    public void printGlobalIntro(String existingConfirmed, String confirmed,
+                                 String dead, String cured, String date) {
+        mTVIntroExistingConfirmed.setText(String.format(
+                getString(R.string.intro_existing_confirmed), existingConfirmed));
+        mTVIntroConfirmed.setText(String.format(
+                getString(R.string.intro_total_confirmed), confirmed));
+        mTVIntroDead.setText(String.format(
+                getString(R.string.intro_total_dead), dead));
+        mTVIntroCured.setText(String.format(
+                getString(R.string.intro_total_cured), cured));
+        mTVIntroDate.setText(String.format(
+                getString(R.string.intro_date), date));
     }
 }

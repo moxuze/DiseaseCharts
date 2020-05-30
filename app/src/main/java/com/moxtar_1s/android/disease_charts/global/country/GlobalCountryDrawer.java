@@ -1,4 +1,4 @@
-package com.moxtar_1s.android.disease_charts.global;
+package com.moxtar_1s.android.disease_charts.global.country;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -22,18 +22,17 @@ import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.MPPointF;
 import com.github.mikephil.charting.utils.Utils;
 import com.moxtar_1s.android.disease_charts.R;
+import com.moxtar_1s.android.disease_charts.global.GlobalData;
 import com.moxtar_1s.android.disease_charts.utils.ColorUtil;
 import com.moxtar_1s.android.disease_charts.pattern.Observer;
 import com.moxtar_1s.android.disease_charts.pattern.Subject;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-class CountryChartDrawer implements Observer, OnChartValueSelectedListener {
+public class GlobalCountryDrawer implements Observer, OnChartValueSelectedListener {
     private Activity mActivity;
     private Subject mSubject;
-    private GlobalData mGlobalData;
+    private GlobalCountryBean mGlobalCountryBean;
     private BarChart mChart;
     private BarDataSet mTotalCuredSet;
     private BarDataSet mTotalDeadSet;
@@ -41,7 +40,7 @@ class CountryChartDrawer implements Observer, OnChartValueSelectedListener {
     private BarDataSet mExistingConfirmedSet;
     private boolean isDataInitialized;
 
-    CountryChartDrawer(BarChart chart, Activity activity) {
+    public GlobalCountryDrawer(BarChart chart, Activity activity) {
         mChart = chart;
         mActivity = activity;
         isDataInitialized = false;
@@ -107,21 +106,20 @@ class CountryChartDrawer implements Observer, OnChartValueSelectedListener {
     @Override
     public void update(Subject subject, Object data) {
         mSubject = subject;
-        mGlobalData = (GlobalData) data;
-        Map<String, ArrayList<BarEntry>> countryEntriesMap = mGlobalData.getCountryEntriesMap();
+        mGlobalCountryBean = ((GlobalData) data).getGlobalCountryBean();
         if (isDataInitialized) {
-            mTotalCuredSet.setValues(countryEntriesMap.get("totalCuredEntries"));
-            mTotalDeadSet.setValues(countryEntriesMap.get("totalDeathEntries"));
-            mTotalConfirmedSet.setValues(countryEntriesMap.get("totalConfirmedEntries"));
-            mExistingConfirmedSet.setValues(countryEntriesMap.get("existingConfirmedEntries"));
+            mTotalCuredSet.setValues(mGlobalCountryBean.getTotalCuredEntries());
+            mTotalDeadSet.setValues(mGlobalCountryBean.getTotalDeathEntries());
+            mTotalConfirmedSet.setValues(mGlobalCountryBean.getTotalConfirmedEntries());
+            mExistingConfirmedSet.setValues(mGlobalCountryBean.getExistingConfirmedEntries());
         } else {
-            mTotalCuredSet = initDateSet(countryEntriesMap.get("totalCuredEntries"),
+            mTotalCuredSet = initDateSet(mGlobalCountryBean.getTotalCuredEntries(),
                     mActivity.getString(R.string.total_cured));
-            mTotalDeadSet = initDateSet(countryEntriesMap.get("totalDeathEntries"),
+            mTotalDeadSet = initDateSet(mGlobalCountryBean.getTotalDeathEntries(),
                     mActivity.getString(R.string.total_dead));
-            mTotalConfirmedSet = initDateSet(countryEntriesMap.get("totalConfirmedEntries"),
+            mTotalConfirmedSet = initDateSet(mGlobalCountryBean.getTotalConfirmedEntries(),
                     mActivity.getString(R.string.total_confirmed));
-            mExistingConfirmedSet = initDateSet(countryEntriesMap.get("existingConfirmedEntries"),
+            mExistingConfirmedSet = initDateSet(mGlobalCountryBean.getExistingConfirmedEntries(),
                     mActivity.getString(R.string.existing_confirmed));
             isDataInitialized = true;
         }
@@ -166,27 +164,27 @@ class CountryChartDrawer implements Observer, OnChartValueSelectedListener {
         });
     }
 
-    void loadTotalCured() {
+    public void loadTotalCured() {
         setData(mTotalCuredSet);
         animate();
     }
 
-    void loadTotalDead() {
+    public void loadTotalDead() {
         setData(mTotalDeadSet);
         animate();
     }
 
-    void loadTotalConfirmed() {
+    public void loadTotalConfirmed() {
         setData(mTotalConfirmedSet);
         animate();
     }
 
-    void loadExistingConfirmed() {
+    public void loadExistingConfirmed() {
         setData(mExistingConfirmedSet);
         animate();
     }
 
-    void disableObserve() {
+    public void disableObserve() {
         if (mSubject != null) {
             mSubject.deleteObserver(this);
         }

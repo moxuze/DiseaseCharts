@@ -4,6 +4,9 @@ import android.annotation.SuppressLint;
 
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.PieEntry;
+import com.moxtar_1s.android.disease_charts.global.country.GlobalCountryBean;
+import com.moxtar_1s.android.disease_charts.global.distribution.GlobalDistributionBean;
+import com.moxtar_1s.android.disease_charts.global.introduction.GlobalIntroBean;
 import com.moxtar_1s.android.disease_charts.utils.SortUtil;
 
 import org.json.JSONArray;
@@ -14,16 +17,14 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
-class GlobalData {
+public class GlobalData {
     protected final String mJSONString;
     protected final JSONObject mJSONObject;
-    private Map<String, String> mIntroductionMap;
-    private Map<String, ArrayList<PieEntry>> mDistributionEntriesMap;
-    private Map<String, ArrayList<BarEntry>> mCountryEntriesMap;
+    private GlobalIntroBean mGlobalIntroBean;
+    private GlobalDistributionBean mGlobalDistributionBean;
+    private GlobalCountryBean mGlobalCountryBean;
     private float mTotalConfirmed = 0;
     private float mTotalDead = 0;
     private float mTotalCured = 0;
@@ -31,24 +32,24 @@ class GlobalData {
     private static float DISTRIBUTiON_LIMIT_RATE = 0.015f;
     private static float COUNTRY_LIMIT_RATE = 0.005f;
 
-    GlobalData(String jsonString) throws JSONException {
+    public GlobalData(String jsonString) throws JSONException {
         mJSONString = jsonString;
         mJSONObject = new JSONObject(jsonString);
-        loadIntroductionMap();
-        loadDistributionEntriesMap();
-        loadCountryEntriesMap();
+        loadGlobalIntroBean();
+        loadGlobalDistributionBean();
+        loadGlobalCountryBean();
     }
 
-    String getJSONString() {
+    public String getJSONString() {
         return mJSONString;
     }
 
-    JSONObject getJSONObject() {
+    public JSONObject getJSONObject() {
         return mJSONObject;
     }
 
-    private void loadIntroductionMap() {
-        mIntroductionMap = new HashMap<>();
+    private void loadGlobalIntroBean() {
+        mGlobalIntroBean = new GlobalIntroBean();
         long nowFastTime = new Date().getTime();
         long todayFastTime = nowFastTime - nowFastTime % 86400000L;
         try {
@@ -83,11 +84,11 @@ class GlobalData {
             mTotalDead = totalDead;
             mTotalCured = totalCured;
             mExistingConfirmed = existingConfirmed;
-            mIntroductionMap.put("existingConfirmed", format(existingConfirmed, increaseExistingConfirmed));
-            mIntroductionMap.put("confirmed", format(totalConfirmed, increaseConfirmed));
-            mIntroductionMap.put("dead", format(totalDead, increaseDead));
-            mIntroductionMap.put("cured", format(totalCured, increaseCured));
-            mIntroductionMap.put("date", data.getString("lastUpdateTime"));
+            mGlobalIntroBean.setExistingConfirmed(format(existingConfirmed, increaseExistingConfirmed));
+            mGlobalIntroBean.setConfirmed(format(totalConfirmed, increaseConfirmed));
+            mGlobalIntroBean.setDead(format(totalDead, increaseDead));
+            mGlobalIntroBean.setCured(format(totalCured, increaseCured));
+            mGlobalIntroBean.setDate(data.getString("lastUpdateTime"));
         } catch (JSONException | ParseException e) {
             e.printStackTrace();
         }
@@ -113,12 +114,12 @@ class GlobalData {
         return i;
     }
 
-    Map<String, String> getIntroductionMap() {
-        return mIntroductionMap;
+    public GlobalIntroBean getGlobalIntroBean() {
+        return mGlobalIntroBean;
     }
 
-    private void loadDistributionEntriesMap() {
-        mDistributionEntriesMap = new HashMap<>();
+    private void loadGlobalDistributionBean() {
+        mGlobalDistributionBean = new GlobalDistributionBean();
         ArrayList<PieEntry> totalConfirmedEntries = new ArrayList<>();
         ArrayList<PieEntry> existingConfirmedEntries = new ArrayList<>();
         try {
@@ -156,16 +157,16 @@ class GlobalData {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        mDistributionEntriesMap.put("totalConfirmedEntries", totalConfirmedEntries);
-        mDistributionEntriesMap.put("existingConfirmedEntries", existingConfirmedEntries);
+        mGlobalDistributionBean.setTotalConfirmedEntries(totalConfirmedEntries);
+        mGlobalDistributionBean.setExistingConfirmedEntries(existingConfirmedEntries);
     }
 
-    Map<String, ArrayList<PieEntry>> getDistributionEntriesMap() {
-        return mDistributionEntriesMap;
+    public GlobalDistributionBean getGlobalDistributionBean() {
+        return mGlobalDistributionBean;
     }
 
-    private void loadCountryEntriesMap() {
-        mCountryEntriesMap = new HashMap<>();
+    private void loadGlobalCountryBean() {
+        mGlobalCountryBean = new GlobalCountryBean();
         ArrayList<BarEntry> totalConfirmedEntries = new ArrayList<>();
         ArrayList<BarEntry> totalDeathEntries = new ArrayList<>();
         ArrayList<BarEntry> totalCuredEntries = new ArrayList<>();
@@ -224,13 +225,13 @@ class GlobalData {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        mCountryEntriesMap.put("totalConfirmedEntries", totalConfirmedEntries);
-        mCountryEntriesMap.put("totalDeathEntries", totalDeathEntries);
-        mCountryEntriesMap.put("totalCuredEntries", totalCuredEntries);
-        mCountryEntriesMap.put("existingConfirmedEntries", existingConfirmedEntries);
+        mGlobalCountryBean.setTotalConfirmedEntries(totalConfirmedEntries);
+        mGlobalCountryBean.setTotalDeathEntries(totalDeathEntries);
+        mGlobalCountryBean.setTotalCuredEntries(totalCuredEntries);
+        mGlobalCountryBean.setExistingConfirmedEntries(existingConfirmedEntries);
     }
 
-    Map<String, ArrayList<BarEntry>> getCountryEntriesMap() {
-        return mCountryEntriesMap;
+    public GlobalCountryBean getGlobalCountryBean() {
+        return mGlobalCountryBean;
     }
 }

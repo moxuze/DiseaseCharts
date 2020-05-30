@@ -1,4 +1,4 @@
-package com.moxtar_1s.android.disease_charts.global;
+package com.moxtar_1s.android.disease_charts.global.distribution;
 
 import android.app.Activity;
 import android.graphics.Color;
@@ -18,6 +18,7 @@ import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.moxtar_1s.android.disease_charts.R;
+import com.moxtar_1s.android.disease_charts.global.GlobalData;
 import com.moxtar_1s.android.disease_charts.utils.ColorUtil;
 import com.moxtar_1s.android.disease_charts.pattern.Observer;
 import com.moxtar_1s.android.disease_charts.pattern.Subject;
@@ -25,18 +26,18 @@ import com.moxtar_1s.android.disease_charts.pattern.Subject;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-class DistributionChartDrawer implements Observer {
+public class GlobalDistributionDrawer implements Observer {
     private Activity mActivity;
     private Subject mSubject;
+    private GlobalDistributionBean mGlobalDistributionBean;
     private PieChart mChart;
     private PieDataSet mTotalConfirmedSet;
     private PieDataSet mExistingConfirmedSet;
     private boolean isDataInitialized;
     private boolean isTotalConfirmedSelected;
 
-    DistributionChartDrawer(PieChart chart, Activity activity) {
+    public GlobalDistributionDrawer(PieChart chart, Activity activity) {
         mChart = chart;
         mActivity = activity;
         isTotalConfirmedSelected = false;
@@ -93,15 +94,14 @@ class DistributionChartDrawer implements Observer {
     @Override
     public void update(Subject subject, Object data) {
         mSubject = subject;
-        GlobalData globalData = (GlobalData) data;
-        Map<String, ArrayList<PieEntry>> distributionEntriesMap = globalData.getDistributionEntriesMap();
+        mGlobalDistributionBean = ((GlobalData) data).getGlobalDistributionBean();
         if (isDataInitialized) {
-            mTotalConfirmedSet.setValues(distributionEntriesMap.get("totalConfirmedEntries"));
-            mExistingConfirmedSet.setValues(distributionEntriesMap.get("existingConfirmedEntries"));
+            mTotalConfirmedSet.setValues(mGlobalDistributionBean.getTotalConfirmedEntries());
+            mExistingConfirmedSet.setValues(mGlobalDistributionBean.getExistingConfirmedEntries());
         } else {
-            mTotalConfirmedSet = initDateSet(distributionEntriesMap.get("totalConfirmedEntries"),
+            mTotalConfirmedSet = initDateSet(mGlobalDistributionBean.getTotalConfirmedEntries(),
                     mActivity.getString(R.string.total_confirmed));
-            mExistingConfirmedSet = initDateSet(distributionEntriesMap.get("existingConfirmedEntries"),
+            mExistingConfirmedSet = initDateSet(mGlobalDistributionBean.getExistingConfirmedEntries(),
                     mActivity.getString(R.string.existing_confirmed));
             isDataInitialized = true;
         }
@@ -160,14 +160,14 @@ class DistributionChartDrawer implements Observer {
         });
     }
 
-    void setTotalConfirmedEnabled(boolean selected) {
+    public void setTotalConfirmedEnabled(boolean selected) {
         isTotalConfirmedSelected = selected;
         setData();
         // 更新后播放动画
         animate();
     }
 
-    void disableObserve() {
+    public void disableObserve() {
         if (mSubject != null) {
             mSubject.deleteObserver(this);
         }
