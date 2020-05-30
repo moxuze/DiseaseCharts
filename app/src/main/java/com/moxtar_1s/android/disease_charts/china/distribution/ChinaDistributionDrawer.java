@@ -1,4 +1,4 @@
-package com.moxtar_1s.android.disease_charts.china;
+package com.moxtar_1s.android.disease_charts.china.distribution;
 
 import android.app.Activity;
 import android.graphics.Color;
@@ -18,25 +18,26 @@ import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.moxtar_1s.android.disease_charts.R;
-import com.moxtar_1s.android.disease_charts.utils.Colors;
+import com.moxtar_1s.android.disease_charts.china.ChinaData;
+import com.moxtar_1s.android.disease_charts.utils.ColorUtil;
 import com.moxtar_1s.android.disease_charts.pattern.Observer;
 import com.moxtar_1s.android.disease_charts.pattern.Subject;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-public class DistributionChartDrawer implements Observer {
+public class ChinaDistributionDrawer implements Observer {
     private Activity mActivity;
     private Subject mSubject;
+    private ChinaDistributionBean mChinaDistributionBean;
     private PieChart mChart;
     private PieDataSet mTotalConfirmedSet;
     private PieDataSet mExistingConfirmedSet;
     private boolean isDataInitialized;
     private boolean isTotalConfirmedSelected;
 
-    DistributionChartDrawer(PieChart chart, Activity activity) {
+    public ChinaDistributionDrawer(PieChart chart, Activity activity) {
         mChart = chart;
         mActivity = activity;
         isTotalConfirmedSelected = false;
@@ -93,15 +94,14 @@ public class DistributionChartDrawer implements Observer {
     @Override
     public void update(Subject subject, Object data) {
         mSubject = subject;
-        ChinaData chinaData = (ChinaData) data;
-        Map<String, ArrayList<PieEntry>> distributionEntriesMap = chinaData.getDistributionEntriesMap();
+        mChinaDistributionBean = ((ChinaData) data).getChinaDistributionBean();
         if (isDataInitialized) {
-            mTotalConfirmedSet.setValues(distributionEntriesMap.get("totalConfirmedEntries"));
-            mExistingConfirmedSet.setValues(distributionEntriesMap.get("existingConfirmedEntries"));
+            mTotalConfirmedSet.setValues(mChinaDistributionBean.getTotalConfirmedEntries());
+            mExistingConfirmedSet.setValues(mChinaDistributionBean.getExistingConfirmedEntries());
         } else {
-            mTotalConfirmedSet = initDateSet(distributionEntriesMap.get("totalConfirmedEntries"),
+            mTotalConfirmedSet = initDateSet(mChinaDistributionBean.getTotalConfirmedEntries(),
                     mActivity.getString(R.string.total_confirmed));
-            mExistingConfirmedSet = initDateSet(distributionEntriesMap.get("existingConfirmedEntries"),
+            mExistingConfirmedSet = initDateSet(mChinaDistributionBean.getExistingConfirmedEntries(),
                     mActivity.getString(R.string.existing_confirmed));
             isDataInitialized = true;
         }
@@ -116,7 +116,7 @@ public class DistributionChartDrawer implements Observer {
         set.setSliceSpace(3f);
         set.setSelectionShift(5f);
         // 增加颜色
-        set.setColors(Colors.getColorTemplate());
+        set.setColors(ColorUtil.getColorTemplate());
         // 设置数据偏移位置
         set.setValueLinePart1OffsetPercentage(80.f);
         set.setValueLinePart1Length(0.2f);
@@ -160,14 +160,14 @@ public class DistributionChartDrawer implements Observer {
         });
     }
 
-    void setTotalConfirmedEnabled(boolean selected) {
+    public void setTotalConfirmedEnabled(boolean selected) {
         isTotalConfirmedSelected = selected;
         setData();
         // 更新后播放动画
         animate();
     }
 
-    void disableObserve() {
+    public void disableObserve() {
         if (mSubject != null) {
             mSubject.deleteObserver(this);
         }

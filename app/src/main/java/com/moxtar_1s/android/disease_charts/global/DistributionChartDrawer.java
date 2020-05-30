@@ -18,7 +18,7 @@ import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.moxtar_1s.android.disease_charts.R;
-import com.moxtar_1s.android.disease_charts.utils.Colors;
+import com.moxtar_1s.android.disease_charts.utils.ColorUtil;
 import com.moxtar_1s.android.disease_charts.pattern.Observer;
 import com.moxtar_1s.android.disease_charts.pattern.Subject;
 
@@ -116,7 +116,7 @@ class DistributionChartDrawer implements Observer {
         set.setSliceSpace(3f);
         set.setSelectionShift(5f);
         // 增加颜色
-        set.setColors(Colors.getColorTemplate());
+        set.setColors(ColorUtil.getColorTemplate());
         // 设置数据偏移位置
         set.setValueLinePart1OffsetPercentage(80.f);
         set.setValueLinePart1Length(0.2f);

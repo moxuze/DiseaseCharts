@@ -17,12 +17,15 @@ import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.charts.PieChart;
 import com.moxtar_1s.android.disease_charts.R;
+import com.moxtar_1s.android.disease_charts.china.distribution.ChinaDistributionDrawer;
+import com.moxtar_1s.android.disease_charts.china.introduction.ChinaIntroDrawer;
+import com.moxtar_1s.android.disease_charts.china.introduction.ChinaIntroPrinter;
+import com.moxtar_1s.android.disease_charts.china.province.ChinaProvinceDrawer;
+import com.moxtar_1s.android.disease_charts.china.trend.ChinaTrendDrawer;
 
 import org.json.JSONException;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -30,7 +33,7 @@ import java.util.concurrent.Executors;
 /**
  * 简介：与MainActivity协作运行，用于控制国内疫情页面的Fragment类。
  */
-public class ChinaFragment extends Fragment {
+public class ChinaFragment extends Fragment implements ChinaIntroPrinter {
     // 线程池和首次刷新标志
     private ExecutorService mRefreshExecutor;
     private boolean isInitialized;
@@ -60,10 +63,10 @@ public class ChinaFragment extends Fragment {
     private Switch mSwitchConfirmedExisting;
     // Subject和一堆Observer
     private ChinaDataSubject mChinaDataSubject;
-    private DistributionChartDrawer mDistributionChartDrawer;
-    private IntroductionDrawer mIntroductionDrawer;
-    private TrendChartDrawer mTrendChartDrawer;
-    private ProvinceChartDrawer mProvinceChartDrawer;
+    private ChinaIntroDrawer mChinaIntroDrawer;
+    private ChinaDistributionDrawer mChinaDistributionDrawer;
+    private ChinaProvinceDrawer mChinaProvinceDrawer;
+    private ChinaTrendDrawer mChinaTrendDrawer;
 
     /**
      * 简介：不准自主调用的构造方法，方法体只能为空。
@@ -109,31 +112,22 @@ public class ChinaFragment extends Fragment {
             mTVIntroDead = view.findViewById(R.id.tv_intro_dead);
             mTVIntroCured = view.findViewById(R.id.tv_intro_cured);
             mTVIntroDate = view.findViewById(R.id.tv_intro_date);
-            // 包装TextView
-            Map<String, TextView> textViewMap = new HashMap<>();
-            textViewMap.put("tvIntroExistingConfirmed", mTVIntroExistingConfirmed);
-            textViewMap.put("tvIntroNoSymptom", mTVIntroNoSymptom);
-            textViewMap.put("tvIntroInput", mTVIntroInput);
-            textViewMap.put("tvIntroConfirmed", mTVIntroConfirmed);
-            textViewMap.put("tvIntroDead", mTVIntroDead);
-            textViewMap.put("tvIntroCured", mTVIntroCured);
-            textViewMap.put("tvIntroDate", mTVIntroDate);
-            // 创建Drawer
-            mIntroductionDrawer = new IntroductionDrawer(textViewMap, getActivity());
-            mChinaDataSubject.addObserver(mIntroductionDrawer);
+            // 登记Drawer
+            mChinaIntroDrawer = new ChinaIntroDrawer(this);
+            mChinaDataSubject.addObserver(mChinaIntroDrawer);
         }
         {   // *DistributionChart* //
             mDistributionChart = view.findViewById(R.id.distribution_chart);
             mSwitchConfirmedExisting = view.findViewById(R.id.switch_confirmed_existing);
             // 创建Drawer
-            mDistributionChartDrawer = new DistributionChartDrawer(mDistributionChart, getActivity());
-            mChinaDataSubject.addObserver(mDistributionChartDrawer);
+            mChinaDistributionDrawer = new ChinaDistributionDrawer(mDistributionChart, getActivity());
+            mChinaDataSubject.addObserver(mChinaDistributionDrawer);
             // 设置控件
             mSwitchConfirmedExisting.setChecked(false);
             mSwitchConfirmedExisting.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    mDistributionChartDrawer.setTotalConfirmedEnabled(isChecked);
+                    mChinaDistributionDrawer.setTotalConfirmedEnabled(isChecked);
                 }
             });
         }
@@ -144,15 +138,15 @@ public class ChinaFragment extends Fragment {
             mRadioTotalConfirmed = view.findViewById(R.id.radio_total_confirmed);
             mRadioExistingConfirmed = view.findViewById(R.id.radio_existing_confirmed);
             // 创建Drawer
-            mProvinceChartDrawer = new ProvinceChartDrawer(mProvinceChart, getActivity());
-            mChinaDataSubject.addObserver(mProvinceChartDrawer);
+            mChinaProvinceDrawer = new ChinaProvinceDrawer(mProvinceChart, getActivity());
+            mChinaDataSubject.addObserver(mChinaProvinceDrawer);
             // 设置控件
             mRadioTotalCured.setChecked(true);
             mRadioTotalCured.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (isChecked) {
-                        mProvinceChartDrawer.loadTotalCured();
+                        mChinaProvinceDrawer.loadTotalCured();
                     }
                 }
             });
@@ -160,7 +154,7 @@ public class ChinaFragment extends Fragment {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (isChecked) {
-                        mProvinceChartDrawer.loadTotalDead();
+                        mChinaProvinceDrawer.loadTotalDead();
                     }
                 }
             });
@@ -168,7 +162,7 @@ public class ChinaFragment extends Fragment {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (isChecked) {
-                        mProvinceChartDrawer.loadTotalConfirmed();
+                        mChinaProvinceDrawer.loadTotalConfirmed();
                     }
                 }
             });
@@ -176,7 +170,7 @@ public class ChinaFragment extends Fragment {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (isChecked) {
-                        mProvinceChartDrawer.loadExistingConfirmed();
+                        mChinaProvinceDrawer.loadExistingConfirmed();
                     }
                 }
             });
@@ -188,8 +182,8 @@ public class ChinaFragment extends Fragment {
             mSwitchCured = view.findViewById(R.id.switch_cured);
             mSwitchSuspected = view.findViewById(R.id.switch_suspected);
             // 创建Drawer
-            mTrendChartDrawer = new TrendChartDrawer(mTrendChart, getActivity());
-            mChinaDataSubject.addObserver(mTrendChartDrawer);
+            mChinaTrendDrawer = new ChinaTrendDrawer(mTrendChart, getActivity());
+            mChinaDataSubject.addObserver(mChinaTrendDrawer);
             // 设置控件
             mSwitchConfirmed.setChecked(true);
             mSwitchDead.setChecked(true);
@@ -198,25 +192,25 @@ public class ChinaFragment extends Fragment {
             mSwitchConfirmed.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    mTrendChartDrawer.setConfirmedEnabled(isChecked);
+                    mChinaTrendDrawer.setConfirmedEnabled(isChecked);
                 }
             });
             mSwitchDead.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    mTrendChartDrawer.setDeadEnabled(isChecked);
+                    mChinaTrendDrawer.setDeadEnabled(isChecked);
                 }
             });
             mSwitchCured.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    mTrendChartDrawer.setCuredEnabled(isChecked);
+                    mChinaTrendDrawer.setCuredEnabled(isChecked);
                 }
             });
             mSwitchSuspected.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    mTrendChartDrawer.setSuspectedEnabled(isChecked);
+                    mChinaTrendDrawer.setSuspectedEnabled(isChecked);
                 }
             });
         }
@@ -265,5 +259,24 @@ public class ChinaFragment extends Fragment {
             mRefreshExecutor.execute(new RefreshRunnable());
             isInitialized = true;
         }
+    }
+
+    @Override
+    public void printChinaIntro(String existingConfirmed, String noSymptom, String input,
+                                String confirmed, String dead, String cured, String date) {
+        mTVIntroExistingConfirmed.setText(String.format(
+                getString(R.string.intro_existing_confirmed), existingConfirmed));
+        mTVIntroNoSymptom.setText(String.format(
+                getString(R.string.intro_no_symptom), noSymptom));
+        mTVIntroInput.setText(String.format(
+                getString(R.string.intro_input), input));
+        mTVIntroConfirmed.setText(String.format(
+                getString(R.string.intro_total_confirmed), confirmed));
+        mTVIntroDead.setText(String.format(
+                getString(R.string.intro_total_dead), dead));
+        mTVIntroCured.setText(String.format(
+                getString(R.string.intro_total_cured), cured));
+        mTVIntroDate.setText(String.format(
+                getString(R.string.intro_date), date));
     }
 }

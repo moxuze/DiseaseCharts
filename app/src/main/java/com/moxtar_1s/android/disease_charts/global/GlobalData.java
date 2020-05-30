@@ -4,7 +4,7 @@ import android.annotation.SuppressLint;
 
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.PieEntry;
-import com.moxtar_1s.android.disease_charts.utils.ChartComparator;
+import com.moxtar_1s.android.disease_charts.utils.SortUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -145,8 +145,8 @@ class GlobalData {
                     otherExistingConfirmed += existingConfirmed;
                 }
             }
-            ChartComparator.sortPieEntries(totalConfirmedEntries);
-            ChartComparator.sortPieEntries(existingConfirmedEntries);
+            SortUtil.sortPieEntries(totalConfirmedEntries);
+            SortUtil.sortPieEntries(existingConfirmedEntries);
             if (otherTotalConfirmed > 0) {
                 totalConfirmedEntries.add(new PieEntry(otherTotalConfirmed, "其他"));
             }
@@ -205,10 +205,10 @@ class GlobalData {
                     otherExistingConfirmed += existingConfirmed;
                 }
             }
-            ChartComparator.sortBarEntries(totalConfirmedEntries);
-            ChartComparator.sortBarEntries(totalDeathEntries);
-            ChartComparator.sortBarEntries(totalCuredEntries);
-            ChartComparator.sortBarEntries(existingConfirmedEntries);
+            SortUtil.sortBarEntries(totalConfirmedEntries);
+            SortUtil.sortBarEntries(totalDeathEntries);
+            SortUtil.sortBarEntries(totalCuredEntries);
+            SortUtil.sortBarEntries(existingConfirmedEntries);
             if (otherTotalConfirmed > 0) {
                 totalConfirmedEntries.add(new BarEntry(i1, otherTotalConfirmed, "其他"));
             }

@@ -1,4 +1,4 @@
-package com.moxtar_1s.android.disease_charts.china;
+package com.moxtar_1s.android.disease_charts.china.trend;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -22,16 +22,17 @@ import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.MPPointF;
 import com.github.mikephil.charting.utils.Utils;
 import com.moxtar_1s.android.disease_charts.R;
+import com.moxtar_1s.android.disease_charts.china.ChinaData;
 import com.moxtar_1s.android.disease_charts.pattern.Observer;
 import com.moxtar_1s.android.disease_charts.pattern.Subject;
+import com.moxtar_1s.android.disease_charts.utils.DateUtil;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-class TrendChartDrawer implements Observer, OnChartValueSelectedListener {
+public class ChinaTrendDrawer implements Observer, OnChartValueSelectedListener {
     private Activity mActivity;
     private Subject mSubject;
+    private ChinaTrendBean mChinaTrendBean;
     private LineChart mChart;
     private LineDataSet mConfirmedSet;
     private LineDataSet mDeadSet;
@@ -43,7 +44,7 @@ class TrendChartDrawer implements Observer, OnChartValueSelectedListener {
     private boolean isCuredEnabled;
     private boolean isSuspectedEnabled;
 
-    TrendChartDrawer(LineChart chart, Activity activity) {
+    public ChinaTrendDrawer(LineChart chart, Activity activity) {
         mChart = chart;
         mActivity = activity;
         isDataInitialized = false;
@@ -86,7 +87,7 @@ class TrendChartDrawer implements Observer, OnChartValueSelectedListener {
             xAxis.setValueFormatter(new ValueFormatter() {
                 @Override
                 public String getFormattedValue(float value) {
-                    return ChinaData.floatToDate(value);
+                    return DateUtil.floatToDate(value);
                 }
             });
         }
@@ -105,21 +106,24 @@ class TrendChartDrawer implements Observer, OnChartValueSelectedListener {
     @Override
     public void update(Subject subject, Object data) {
         mSubject = subject;
-        ChinaData chinaData = (ChinaData) data;
-        Map<String, ArrayList<Entry>> trendEntriesMap = chinaData.getTrendEntriesMap();
+        mChinaTrendBean = ((ChinaData) data).getChinaTrendBean();
         if (isDataInitialized) {
-            mConfirmedSet.setValues(trendEntriesMap.get("confirmedEntries"));
-            mDeadSet.setValues(trendEntriesMap.get("deadEntries"));
-            mCuredSet.setValues(trendEntriesMap.get("curedEntries"));
-            mSuspectedSet.setValues(trendEntriesMap.get("suspectedEntries"));
+            mConfirmedSet.setValues(mChinaTrendBean.getConfirmedEntries());
+            mDeadSet.setValues(mChinaTrendBean.getDeadEntries());
+            mCuredSet.setValues(mChinaTrendBean.getCuredEntries());
+            mSuspectedSet.setValues(mChinaTrendBean.getSuspectedEntries());
         } else {
-            mConfirmedSet = initDateSet(trendEntriesMap.get("confirmedEntries"), mActivity.getString(R.string.confirmed),
+            mConfirmedSet = initDateSet(mChinaTrendBean.getConfirmedEntries(),
+                    mActivity.getString(R.string.confirmed),
                     ContextCompat.getColor(mActivity, R.color.total_confirmed));
-            mDeadSet = initDateSet(trendEntriesMap.get("deadEntries"), mActivity.getString(R.string.dead),
+            mDeadSet = initDateSet(mChinaTrendBean.getDeadEntries(),
+                    mActivity.getString(R.string.dead),
                     ContextCompat.getColor(mActivity, R.color.total_dead));
-            mCuredSet = initDateSet(trendEntriesMap.get("curedEntries"), mActivity.getString(R.string.cured),
+            mCuredSet = initDateSet(mChinaTrendBean.getCuredEntries(),
+                    mActivity.getString(R.string.cured),
                     ContextCompat.getColor(mActivity, R.color.total_cured));
-            mSuspectedSet = initDateSet(trendEntriesMap.get("suspectedEntries"), mActivity.getString(R.string.suspected),
+            mSuspectedSet = initDateSet(mChinaTrendBean.getSuspectedEntries(),
+                    mActivity.getString(R.string.suspected),
                     ContextCompat.getColor(mActivity, R.color.existing_suspected));
             isDataInitialized = true;
         }
@@ -183,28 +187,28 @@ class TrendChartDrawer implements Observer, OnChartValueSelectedListener {
         mChart.notifyDataSetChanged();
     }
 
-    void setConfirmedEnabled(boolean enabled) {
+    public void setConfirmedEnabled(boolean enabled) {
         mChart.setDrawMarkers(false);
         isConfirmedEnabled = enabled;
         setData();
         mChart.invalidate();
     }
 
-    void setDeadEnabled(boolean enabled) {
+    public void setDeadEnabled(boolean enabled) {
         mChart.setDrawMarkers(false);
         isDeadEnabled = enabled;
         setData();
         mChart.invalidate();
     }
 
-    void setCuredEnabled(boolean enabled) {
+    public void setCuredEnabled(boolean enabled) {
         mChart.setDrawMarkers(false);
         isCuredEnabled = enabled;
         setData();
         mChart.invalidate();
     }
 
-    void setSuspectedEnabled(boolean enabled) {
+    public void setSuspectedEnabled(boolean enabled) {
         mChart.setDrawMarkers(false);
         isSuspectedEnabled = enabled;
         setData();
@@ -241,7 +245,7 @@ class TrendChartDrawer implements Observer, OnChartValueSelectedListener {
                 tvContent.setText(Utils.formatNumber(ce.getHigh(), 0, true));
             } else {
                 String text = Utils.formatNumber(e.getY(), 0, true) +
-                        getResources().getString(R.string.format) + '\n' + ChinaData.floatToDate(e.getX());
+                        getResources().getString(R.string.format) + '\n' + DateUtil.floatToDate(e.getX());
                 tvContent.setText(text);
             }
             super.refreshContent(e, highlight);

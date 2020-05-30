@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class ChartComparator {
+public class SortUtil {
     private static final Comparator<Entry> CHART_COMPARATOR = new Comparator<Entry>() {
         @Override
         public int compare(Entry o1, Entry o2) {

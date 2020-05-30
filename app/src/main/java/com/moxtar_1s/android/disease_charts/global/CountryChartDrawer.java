@@ -22,7 +22,7 @@ import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.MPPointF;
 import com.github.mikephil.charting.utils.Utils;
 import com.moxtar_1s.android.disease_charts.R;
-import com.moxtar_1s.android.disease_charts.utils.Colors;
+import com.moxtar_1s.android.disease_charts.utils.ColorUtil;
 import com.moxtar_1s.android.disease_charts.pattern.Observer;
 import com.moxtar_1s.android.disease_charts.pattern.Subject;
 
@@ -133,7 +133,7 @@ class CountryChartDrawer implements Observer, OnChartValueSelectedListener {
 
     private BarDataSet initDateSet(List<BarEntry> list, String label) {
         BarDataSet set = new BarDataSet(list, label);
-        set.setColors(Colors.getColorTemplate());
+        set.setColors(ColorUtil.getColorTemplate());
         set.setDrawValues(true);
         return set;
     }

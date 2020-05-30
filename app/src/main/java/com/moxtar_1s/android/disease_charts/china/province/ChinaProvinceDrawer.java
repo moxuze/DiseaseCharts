@@ -1,4 +1,4 @@
-package com.moxtar_1s.android.disease_charts.china;
+package com.moxtar_1s.android.disease_charts.china.province;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -22,18 +22,17 @@ import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.utils.MPPointF;
 import com.github.mikephil.charting.utils.Utils;
 import com.moxtar_1s.android.disease_charts.R;
-import com.moxtar_1s.android.disease_charts.utils.Colors;
+import com.moxtar_1s.android.disease_charts.china.ChinaData;
+import com.moxtar_1s.android.disease_charts.utils.ColorUtil;
 import com.moxtar_1s.android.disease_charts.pattern.Observer;
 import com.moxtar_1s.android.disease_charts.pattern.Subject;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-class ProvinceChartDrawer implements Observer {
+public class ChinaProvinceDrawer implements Observer {
     private Activity mActivity;
     private Subject mSubject;
-    private ChinaData mChinaData;
+    private ChinaProvinceBean mChinaProvinceBean;
     private BarChart mChart;
     private BarDataSet mTotalCuredSet;
     private BarDataSet mTotalDeadSet;
@@ -41,7 +40,7 @@ class ProvinceChartDrawer implements Observer {
     private BarDataSet mExistingConfirmedSet;
     private boolean isDataInitialized;
 
-    ProvinceChartDrawer(BarChart chart, Activity activity) {
+    public ChinaProvinceDrawer(BarChart chart, Activity activity) {
         mChart = chart;
         mActivity = activity;
         isDataInitialized = false;
@@ -107,21 +106,20 @@ class ProvinceChartDrawer implements Observer {
     @Override
     public void update(Subject subject, Object data) {
         mSubject = subject;
-        mChinaData = (ChinaData) data;
-        Map<String, ArrayList<BarEntry>> provinceEntriesMap = mChinaData.getProvinceEntriesMap();
+        mChinaProvinceBean = ((ChinaData) data).getChinaProvinceBean();
         if (isDataInitialized) {
-            mTotalCuredSet.setValues(provinceEntriesMap.get("totalCuredEntries"));
-            mTotalDeadSet.setValues(provinceEntriesMap.get("totalDeathEntries"));
-            mTotalConfirmedSet.setValues(provinceEntriesMap.get("totalConfirmedEntries"));
-            mExistingConfirmedSet.setValues(provinceEntriesMap.get("existingConfirmedEntries"));
+            mTotalCuredSet.setValues(mChinaProvinceBean.getTotalCuredEntries());
+            mTotalDeadSet.setValues(mChinaProvinceBean.getTotalDeadEntries());
+            mTotalConfirmedSet.setValues(mChinaProvinceBean.getTotalConfirmedEntries());
+            mExistingConfirmedSet.setValues(mChinaProvinceBean.getExistingConfirmedEntries());
         } else {
-            mTotalCuredSet = initDateSet(provinceEntriesMap.get("totalCuredEntries"),
+            mTotalCuredSet = initDateSet(mChinaProvinceBean.getTotalCuredEntries(),
                     mActivity.getString(R.string.total_cured));
-            mTotalDeadSet = initDateSet(provinceEntriesMap.get("totalDeathEntries"),
+            mTotalDeadSet = initDateSet(mChinaProvinceBean.getTotalDeadEntries(),
                     mActivity.getString(R.string.total_dead));
-            mTotalConfirmedSet = initDateSet(provinceEntriesMap.get("totalConfirmedEntries"),
+            mTotalConfirmedSet = initDateSet(mChinaProvinceBean.getTotalConfirmedEntries(),
                     mActivity.getString(R.string.total_confirmed));
-            mExistingConfirmedSet = initDateSet(provinceEntriesMap.get("existingConfirmedEntries"),
+            mExistingConfirmedSet = initDateSet(mChinaProvinceBean.getExistingConfirmedEntries(),
                     mActivity.getString(R.string.existing_confirmed));
             isDataInitialized = true;
         }
@@ -133,7 +131,7 @@ class ProvinceChartDrawer implements Observer {
 
     private BarDataSet initDateSet(List<BarEntry> list, String label) {
         BarDataSet set = new BarDataSet(list, label);
-        set.setColors(Colors.getColorTemplate());
+        set.setColors(ColorUtil.getColorTemplate());
         set.setDrawValues(true);
         return set;
     }
@@ -166,27 +164,27 @@ class ProvinceChartDrawer implements Observer {
         });
     }
 
-    void loadTotalCured() {
+    public void loadTotalCured() {
         setData(mTotalCuredSet);
         animate();
     }
 
-    void loadTotalDead() {
+    public void loadTotalDead() {
         setData(mTotalDeadSet);
         animate();
     }
 
-    void loadTotalConfirmed() {
+    public void loadTotalConfirmed() {
         setData(mTotalConfirmedSet);
         animate();
     }
 
-    void loadExistingConfirmed() {
+    public void loadExistingConfirmed() {
         setData(mExistingConfirmedSet);
         animate();
     }
 
-    void disableObserve() {
+    public void disableObserve() {
         if (mSubject != null) {
             mSubject.deleteObserver(this);
         }

@@ -4,7 +4,7 @@ import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
 
-public class Colors {
+public class ColorUtil {
     private static final ArrayList<Integer> COLOR_TEMPLATE;
     static {
         COLOR_TEMPLATE = new ArrayList<>();
