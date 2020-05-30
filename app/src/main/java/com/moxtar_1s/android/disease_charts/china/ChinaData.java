@@ -11,6 +11,7 @@ import com.moxtar_1s.android.disease_charts.china.province.ChinaProvinceBean;
 import com.moxtar_1s.android.disease_charts.china.province.ChinaProvinceDrawer;
 import com.moxtar_1s.android.disease_charts.china.trend.ChinaTrendBean;
 import com.moxtar_1s.android.disease_charts.china.trend.ChinaTrendDrawer;
+import com.moxtar_1s.android.disease_charts.utils.NumberUtil;
 import com.moxtar_1s.android.disease_charts.utils.SortUtil;
 import com.moxtar_1s.android.disease_charts.utils.DateUtil;
 
@@ -133,11 +134,11 @@ public class ChinaData {
 
     private String format(int cases, int increase) {
         if (increase > 0) {
-            return cases + "\n+" + increase;
-        } else if (increase == 0) {
-            return cases + "\n--";
+            return NumberUtil.formatNumber(cases) + "\n+" + NumberUtil.formatNumber(increase);
+        } else if (increase < 0) {
+            return NumberUtil.formatNumber(cases) + "\n" + NumberUtil.formatNumber(increase);
         } else {
-            return cases + "\n" + increase;
+            return NumberUtil.formatNumber(cases) + "\n--";
         }
     }
 
